@@ -1,40 +1,43 @@
-// import { throttle } from "lodash";
+import throttle from 'lodash.throttle';
 
 const formFeedBack = document.querySelector('.feedback-form');
-console.log('🚀 ~ formEl', formFeedBack);
+const inputForm = document.querySelector('input');
+const messageForm = document.querySelector('textarea');
 
+formFeedBack.addEventListener('input', throttle(onInput, 500));
 formFeedBack.addEventListener('submit', onLoginFormSubmit);
-formFeedBack.addEventListener('input', onLoginFormInput);
-const FEEDBACK_FORM_STATE = '';
 
-function onLoginFormInput(e) {
-    e.preventDefault();
-    
+const local = {
+  email: '',
+  message: '',
+};
 
-  localStorage.setItem(FEEDBACK_FORM_STATE, form.elements.message.value);
-  updateOutput();
-  form.reset();
+
+
+const setItemFunc = () =>
+  localStorage.setItem('feedback-form-state', JSON.stringify(local));
+
+function onInput(e) {
+  local[e.target.name] = e.target.value;
+
+  setItemFunc();
+}
+getLocalData();
+
+function getLocalData() {
+  const savedLocal = localStorage.getItem('feedback-form-state');
+  const parsedLocal = JSON.parse(savedLocal);
+
+  if (parsedLocal.email && parsedLocal.message) {
+    inputForm.value = parsedLocal.email;
+    messageForm.value = parsedLocal.message;
+  }
 }
 
-function updateOutput() {
-  output.textContent = localStorage.getItem(FEEDBACK_FORM_STATE) || '';
+function onLoginFormSubmit(e) {
+  e.preventDefault();
+
+  e.target.reset();
+
+  localStorage.removeItem('feedback-form-state');
 }
-// function onLoginFormSubmit(e) {
-    //     e.preventDefault();
-    
-//     const formElements = e.currentTarget.elements;
-//     const email = formElements.email.value;
-//     const message = formElements.message.value;
-
-//     if (email === '' || message === '') {
-//         alert('all fields must be filled')
-//     } else {
-//         const formData = {
-//             email,
-//             message,
-//         };
-//         // feedbackFormState.push(formData);
-//         console.log(formData);
-//     }
-// }
-
